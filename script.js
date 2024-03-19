@@ -1,27 +1,38 @@
 
 const apiKey = "8f0d819242438ae01375ead8c6e76244";
-const week = [
-    dayjs().add(1, "day").format("MM/DD/YY"),
-    dayjs().add(2, "day").format("MM/DD/YY"),
-    dayjs().add(3, "day").format("MM/DD/YY"),
-    dayjs().add(4, "day").format("MM/DD/YY"),
-    dayjs().add(5, "day").format("MM/DD/YY")
-];
 let weatherIndex = 2;
-//set dates
-$('#currentDate').text(dayjs().format("MM/DD/YY"));
-$('.forecastDay').each(function(index){
-    $( this ).find('h4').text(week[index]);
-});
+function setup(){
+    //set dates
+    const week = [
+        dayjs().add(1, "day").format("MM/DD/YY"),
+        dayjs().add(2, "day").format("MM/DD/YY"),
+        dayjs().add(3, "day").format("MM/DD/YY"),
+        dayjs().add(4, "day").format("MM/DD/YY"),
+        dayjs().add(5, "day").format("MM/DD/YY")
+    ];
+    $('#currentDate').text(dayjs().format("MM/DD/YY"));
+    $('.forecastDay').each(function(index){
+        $( this ).find('h4').text(week[index]);
+    });
+
+}
 $('#citySearchButton').on('click', function(){
     //replace this with code that reads input
-    var city = '';
     city = $('#citySearchInput').val();
+    addButton(city);
     getWeather(city);
     getForecast(city);
 });
+$('#cityList').on('click', function(event){
+    console.log(event.target.nodeName);
+    console.log($(event.target).text());
+    if(event.target.nodeName=='BUTTON'){
+        let city=$(event.target).text();
+        getWeather(city);
+        getForecast(city);
+    }
+})
 function addButton(city){
-    $('#cityName').text(city)
     var newli = $('<li class="list-group-item"></li>');
     var newButton = $('<button type="button" class="btn btn-primary btn-lg"></button>')
     newButton.text(city);
@@ -29,10 +40,10 @@ function addButton(city){
     $('#cityList').append(newli);
 }
 function getWeather(city){
+    $('#cityName').text(city)
     const requestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`
     fetch(requestUrl)
         .then(function (response){
-            addButton(city);
             return response.json();
 
         })
@@ -59,7 +70,6 @@ function getForecast(city){
             return response.json();
         })
         .then(function (response){
-            debugger
             console.log(response.list[weatherIndex]);
             $('.forecastDay').each(function(){
                 let weatherItem = response.list[weatherIndex];
@@ -93,6 +103,7 @@ function getEmoji(cloud){
         return emoji[2];
     }
 }
+setup();
 
 
 
